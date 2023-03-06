@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: posts-depl
+spec:
+  replicas: 1 # Number of pods we want to create running some particular image
+  selector: # Telling the deployment to monitor pods with a label of app: posts
+    matchLabels:
+      app: posts
+  template: # Specify the exact config of a pod we want to create
+    metadata:
+      labels: # basically saying, we want to create a pod, with a label of app: posts.  Works together with the selector key above.
+        app: posts
+    spec:
+      containers:
+        - name: posts
+          image: michaelj0/posts
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: posts-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: posts # This coorosponds to the template label we assigned in posts-depl, these selectors are kind of like HTML / CSS selectors (class, id, etc)
+  ports:
+    - name: posts
+      protocol: TCP
+      port: 4000
+      targetPort: 4000
